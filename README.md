@@ -1,6 +1,6 @@
 # sprung_easing_visualizer
 
-A visualizer of the package called "sprung", a physics-based easing package.
+A visualizer of the package called [sprung](https://pub.dev/packages/sprung), a physics-based easing package.
 
 ## Working Demo: https://helpful-alpaca-158299.netlify.app/
 
