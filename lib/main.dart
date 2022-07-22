@@ -51,11 +51,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<AlignmentGeometry> _animation;
+  //late AnimationController _controller;
+  //late Animation<AlignmentGeometry> _animation;
   late double _massSliderValue = 1.0, _stiffnessSliderValue = 180, _dampingSliderValue = 20, _initialVelocitySliderValue = 0;
+  late int _durationSliderValue = 1000;
+  final ValueNotifier<AlignmentGeometry> _alignment = ValueNotifier<AlignmentGeometry>(Alignment.centerLeft);
 
-  @override
+  /*@override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
@@ -67,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           damping: _dampingSliderValue,
           velocity: _initialVelocitySliderValue,
         )).drive(AlignmentTween(begin: Alignment.centerLeft, end: Alignment.centerRight));
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                   _dampingSliderValue = 20;
                                   _initialVelocitySliderValue = 0;
                                 });
-                                _controller.reset();
+                                //_controller.reset();
                               }
                             : null,
                         icon: const Icon(Icons.refresh_rounded),
@@ -124,17 +126,18 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   ),
                   const SizedBox(height: 8.0),
                   Card(
-                    elevation: 24.0,
+                    elevation: 12.0,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
                     child: Container(
-                      padding: const EdgeInsets.all(16.0),
+                      //padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                       decoration: ShapeDecoration(
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
                         gradient: LinearGradient(
                           begin: Alignment.bottomLeft,
                           end: Alignment.topRight,
                           colors: <Color>[
-                            Colors.white.withOpacity(0.08),
+                            Colors.black.withOpacity(0.16),
                             Colors.transparent,
                             Colors.black.withOpacity(0.16),
                           ],
@@ -146,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             children: <Widget>[
                               Center(
                                   child: Text('Mass: ${_massSliderValue.toStringAsFixed(1)}',
-                                      style: const TextStyle(fontWeight: FontWeight.w600))),
+                                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600))),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: InkWell(
@@ -154,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     setState(() {
                                       _massSliderValue = 1.0;
                                     });
-                                    _controller.reset();
+                                    //_controller.reset();
                                   },
                                   child: const Icon(Icons.refresh_rounded),
                                 ),
@@ -177,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             children: <Widget>[
                               Center(
                                   child: Text('Stiffness (Tension): ${_stiffnessSliderValue.toStringAsFixed(1)}',
-                                      style: const TextStyle(fontWeight: FontWeight.w600))),
+                                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600))),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: InkWell(
@@ -185,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     setState(() {
                                       _stiffnessSliderValue = 180;
                                     });
-                                    _controller.reset();
+                                    //_controller.reset();
                                   },
                                   child: const Icon(Icons.refresh_rounded),
                                 ),
@@ -208,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             children: <Widget>[
                               Center(
                                   child: Text('Damping (Friction): ${_dampingSliderValue.toStringAsFixed(1)}',
-                                      style: const TextStyle(fontWeight: FontWeight.w600))),
+                                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600))),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: InkWell(
@@ -216,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     setState(() {
                                       _dampingSliderValue = 20;
                                     });
-                                    _controller.reset();
+                                    //_controller.reset();
                                   },
                                   child: const Icon(Icons.refresh_rounded),
                                 ),
@@ -239,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             children: <Widget>[
                               Center(
                                   child: Text('Initial Velocity: ${_initialVelocitySliderValue.toStringAsFixed(1)}',
-                                      style: const TextStyle(fontWeight: FontWeight.w600))),
+                                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600))),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: InkWell(
@@ -247,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     setState(() {
                                       _initialVelocitySliderValue = 0;
                                     });
-                                    _controller.reset();
+                                    //_controller.reset();
                                   },
                                   child: const Icon(Icons.refresh_rounded),
                                 ),
@@ -276,8 +279,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             RepaintBoundary(
               key: const Key('AnimationElement'),
               child: GestureDetector(
-                onTap: () {
-                  if (!_controller.isAnimating) {
+                  onTap: () {
+                    _alignment.value =
+                        (_alignment.value == Alignment.centerLeft ? Alignment.centerRight : Alignment.centerLeft);
+                    /*if (!_controller.isAnimating) {
                     _animation = CurvedAnimation(
                         parent: _controller,
                         curve: Sprung.custom(
@@ -291,30 +296,37 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     } else {
                       _controller.reverse();
                     }
-                    /*SpringDescription spring = SpringDescription(
-                      mass: _massSliderValue,
-                      stiffness: _stiffnessSliderValue,
-                      damping: _dampingSliderValue,
-                    );
-                    final SpringSimulation simulation = SpringSimulation(
-                        spring,
-                        (_controller.value.roundToDouble() == 1.0) ? 1.0 : 0.0,
-                        (_controller.value.roundToDouble() == 1.0) ? 0.0 : 1.0,
-                        _initialVelocitySliderValue,
-                        tolerance: Tolerance.defaultTolerance);
-                    _controller.animateWith(simulation);*/
-                  }
-                },
-                child: AnimatedBuilder(
+                  }*/
+                  },
+                  child: ValueListenableBuilder<AlignmentGeometry>(
+                    valueListenable: _alignment,
+                    builder: (BuildContext context, AlignmentGeometry value, Widget? child) {
+                      return AnimatedAlign(
+                        alignment: value,
+                        duration: Duration(milliseconds: _durationSliderValue),
+                        curve: Sprung.custom(
+                          mass: _massSliderValue,
+                          stiffness: _stiffnessSliderValue,
+                          damping: _dampingSliderValue,
+                          velocity: _initialVelocitySliderValue,
+                        ),
+                        child: child,
+                      );
+                    },
+                    child: Container(
+                      height: 96.0,
+                      width: 96.0,
+                      decoration: ShapeDecoration(
+                        color: Colors.deepOrangeAccent.shade400,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+                      ),
+                    ),
+                  ) /*AnimatedBuilder(
                   animation: _animation,
                   builder: (BuildContext context, Widget? child) {
                     return Align(
                       alignment: _animation.value,
-                      child: /*Material(
-                        elevation: 6.0,
-                        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-                        child: */
-                          Container(
+                      child: Container(
                         height: 96.0,
                         width: 96.0,
                         decoration: ShapeDecoration(
@@ -322,14 +334,66 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
                         ),
                       ),
-                      //),
                     );
                   },
+                ),*/
+                  ),
+            ),
+            const Spacer(),
+            Card(
+              elevation: 12.0,
+              shape: const StadiumBorder(),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+                decoration: ShapeDecoration(
+                  shape: const StadiumBorder(),
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
+                    colors: <Color>[
+                      Colors.black.withOpacity(0.16),
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.16),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Stack(
+                      children: <Widget>[
+                        Center(
+                            child: Text('Duration: $_durationSliderValue ms',
+                                style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600))),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _durationSliderValue = 1000;
+                              });
+                              //_controller.reset();
+                            },
+                            child: const Icon(Icons.refresh_rounded),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Slider(
+                      value: _durationSliderValue.toDouble(),
+                      min: 100,
+                      max: 10000,
+                      label: _durationSliderValue.toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          _durationSliderValue = value.round();
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
-            const Spacer(),
-            AnimatedBuilder(
+            /*AnimatedBuilder(
               animation: _controller,
               builder: (BuildContext context, Widget? child) {
                 return ElevatedButton.icon(
@@ -343,7 +407,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     icon: const Icon(Icons.refresh_rounded),
                     label: const Text('Reset Animation'));
               },
-            ),
+            ),*/
           ],
         ),
       ),
